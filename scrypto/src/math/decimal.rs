@@ -178,9 +178,11 @@ impl Decimal {
 
     pub fn powi(&self, exp: i32) -> Self {
         let mut x: BigInt = self.0.clone().into();
-        if x.is_negative() {
-            panic!("powi is not supported for negative numbers");
-        }
+        let sign: BigInt= if self.0.is_negative() && exp % 2 == 0 {
+            BigInt::from(-1)
+        } else {
+            BigInt::from(1)
+        };
         let s = Self::SCALE;
         let bytes2 = Self::BITS / 4;
         let b: BigInt = 10i128.checked_pow(s).into();
@@ -228,9 +230,9 @@ impl Decimal {
         }   
 
         if exp.is_negative() {
-            Self(big_int_to_i128(b.clone() * b / z))
+            Self(sign * big_int_to_i128(b.clone() * b / z))
         } else {
-            Self(big_int_to_i128(z))
+            Self(sign * big_int_to_i128(z))
         }
     }
 }
